@@ -11,6 +11,7 @@ namespace anvil::ir
         explicit Module(std::string name)
             : name_(std::move(name)) {}
 
+        const std::string &name() const { return name_; }
         void addFunction(Function *fn)
         {
             functions_.push_back(fn);

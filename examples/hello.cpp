@@ -6,7 +6,7 @@ using namespace anvil::ir;
 int main()
 {
     Context ctx;
-    Module mod("test");
+    Module mod("not");
 
     auto *i32 = ctx.getIntType(32);
     auto *fn = new Function(i32, "main");
@@ -20,7 +20,7 @@ int main()
     fn->addBlock(entry);
     mod.addFunction(fn);
 
-    std::ofstream out("test.ll");
+    std::ofstream out(mod.name() + ".ll");
     if (!out)
         return 1;
 
