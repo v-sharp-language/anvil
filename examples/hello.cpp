@@ -6,7 +6,7 @@ using namespace anvil::ir;
 int main()
 {
     Context ctx;
-    Module mod("not");
+    Module mod("test");
 
     auto *i32 = ctx.getIntType(32);
     auto *fn = new Function(i32, "main");
