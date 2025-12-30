@@ -15,16 +15,6 @@ namespace anvil::ir
             blocks_.push_back(bb);
         }
 
-        void print(std::ostream &os) const
-        {
-            os << "define ";
-            type_->print(os);
-            os << " @" << name_ << "() {\n";
-            for (auto *bb : blocks_)
-                bb->print(os);
-            os << "}\n";
-        }
-
     private:
         std::vector<BasicBlock *> blocks_;
     };
