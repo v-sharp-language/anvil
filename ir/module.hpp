@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ir/function.hpp>
+#include <ir/global.hpp>
 
 namespace anvil::ir
 {
@@ -16,6 +17,19 @@ namespace anvil::ir
         void addGlobal(Value *g)
         {
             globals_.push_back(g);
+        }
+
+        GlobalVariable *createStringLiteral(Context &ctx, const std::string &str)
+        {
+            static unsigned stringId = 0;
+
+            Type *i8 = ctx.getInt8Ty();
+            Type *arrayTy = ctx.getArrayType(i8, str.size() + 1);
+            Type *ptrTy = ctx.getPointerType(arrayTy);
+            ConstantString *cstr = new ConstantString(arrayTy, str);
+            GlobalVariable *gv = new GlobalVariable(ptrTy, ".str." + std::to_string(stringId++), cstr);
+            addGlobal(gv);
+            return gv;
         }
 
         void addFunction(Function *fn)
@@ -49,16 +63,8 @@ namespace anvil::ir
 
             os << "\n";
 
-            for (auto *g : globals_)
+            for (Value *g : globals_)
             {
-                os << "@";
-                if (!g->getName().empty())
-                    os << g->getName();
-                else
-                    os << "global_" << g;
-                os << " = global ";
-                g->getType()->print(os);
-                os << " ";
                 g->print(os);
                 os << "\n";
             }
@@ -66,7 +72,7 @@ namespace anvil::ir
             if (!globals_.empty())
                 os << "\n";
 
-            for (auto *fn : functions_)
+            for (Function *fn : functions_)
             {
                 fn->print(os);
                 os << "\n";

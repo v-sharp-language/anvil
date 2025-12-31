@@ -18,10 +18,7 @@ namespace anvil::ir
         ConstantInt(Type *ty, int64_t val) : Constant(ty), value_(val) {}
         int64_t getValue() const { return value_; }
 
-        void print(std::ostream &os) const
-        {
-            os << value_;
-        }
+        void print(std::ostream &os) const override { os << value_; }
 
     private:
         int64_t value_;
@@ -33,20 +30,48 @@ namespace anvil::ir
         ConstantFP(Type *ty, double val) : Constant(ty), value_(val) {}
         double getValue() const { return value_; }
 
-        void print(std::ostream &os) const
-        {
-            os << value_;
-        }
+        void print(std::ostream &os) const override { os << value_; }
 
     private:
         double value_;
+    };
+
+    class ConstantString : public Constant
+    {
+    public:
+        ConstantString(Type *arrayTy, std::string value)
+            : Constant(arrayTy), value_(std::move(value)) {}
+
+        const std::string &value() const { return value_; }
+
+        void print(std::ostream &os) const override
+        {
+            os << "c\"";
+            for (char c : value_)
+            {
+                if (c == '\n')
+                    os << "\\0A";
+                else if (c == '\t')
+                    os << "\\09";
+                else if (c == '\"')
+                    os << "\\22";
+                else if (c == '\\')
+                    os << "\\5C";
+                else
+                    os << c;
+            }
+            os << "\\00\"";
+        }
+
+    private:
+        std::string value_;
     };
 
     class ConstantPointerNull : public Constant
     {
     public:
         explicit ConstantPointerNull(Type *ty) : Constant(ty) {}
-        void print(std::ostream &os) const { os << "null"; }
+        void print(std::ostream &os) const override { os << "null"; }
     };
 
     class ConstantArray : public Constant
@@ -55,7 +80,7 @@ namespace anvil::ir
         ConstantArray(Type *ty, const std::vector<Constant *> &elems)
             : Constant(ty), elements_(elems) {}
 
-        void print(std::ostream &os) const
+        void print(std::ostream &os) const override
         {
             os << "[";
             for (size_t i = 0; i < elements_.size(); ++i)
@@ -77,7 +102,7 @@ namespace anvil::ir
         ConstantStruct(Type *ty, const std::vector<Constant *> &elems)
             : Constant(ty), elements_(elems) {}
 
-        void print(std::ostream &os) const
+        void print(std::ostream &os) const override
         {
             os << "{";
             for (size_t i = 0; i < elements_.size(); ++i)
@@ -99,7 +124,7 @@ namespace anvil::ir
         ConstantVector(Type *ty, const std::vector<Constant *> &elems)
             : Constant(ty), elements_(elems) {}
 
-        void print(std::ostream &os) const
+        void print(std::ostream &os) const override
         {
             os << "<";
             for (size_t i = 0; i < elements_.size(); ++i)
@@ -119,7 +144,7 @@ namespace anvil::ir
     {
     public:
         ConstantTargetNone(Type *ty) : Constant(ty) {}
-        void print(std::ostream &os) const { os << "none"; }
+        void print(std::ostream &os) const override { os << "none"; }
     };
 
     class ExtractElementConstantExpr : public Constant
@@ -195,7 +220,7 @@ namespace anvil::ir
         {
             os << "getelementptr";
             base_->print(os);
-            for (auto *idx : indices_)
+            for (Constant *idx : indices_)
             {
                 os << ", ";
                 idx->print(os);
@@ -206,4 +231,4 @@ namespace anvil::ir
         Constant *base_;
         std::vector<Constant *> indices_;
     };
-};
+}

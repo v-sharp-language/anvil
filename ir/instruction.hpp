@@ -17,6 +17,7 @@ namespace anvil::ir
             Mul,
             Div,
             Ret,
+            GetElementPtr,
         };
 
         Instruction(Type *type, Opcode op, const std::vector<Value *> &operands = {})
@@ -26,7 +27,7 @@ namespace anvil::ir
         const std::vector<Value *> &getOperands() const { return operands_; }
         unsigned getId() const { return id_; }
 
-        void print(std::ostream &os) const
+        void print(std::ostream &os) const override
         {
             if (opcode_ != Opcode::Ret)
                 os << local(id_) << " = ";
@@ -70,13 +71,36 @@ namespace anvil::ir
                 operands_[1]->print(os);
                 break;
             case Opcode::Ret:
-                os << "ret " << typeStr << " ";
-                if (auto *inst = dynamic_cast<Instruction *>(operands_[0]))
-                    os << local(inst->getId());
-                else
-                    operands_[0]->print(os);
+                os << "ret ";
+                operands_[0]->getType()->print(os);
+                os << " ";
+                operands_[0]->printAsOperand(os);
+                break;
+            case Opcode::GetElementPtr:
+                Type *elemTy = operands_[0]->getType()->getElementType();
+
+                os << "getelementptr ";
+                elemTy->print(os);
+                os << ", ";
+
+                operands_[0]->getType()->print(os);
+                os << " ";
+                operands_[0]->printAsOperand(os);
+
+                for (size_t i = 1; i < operands_.size(); ++i)
+                {
+                    os << ", ";
+                    operands_[i]->getType()->print(os);
+                    os << " ";
+                    operands_[i]->printAsOperand(os);
+                }
                 break;
             }
+        }
+
+        void printAsOperand(std::ostream &os) const override
+        {
+            os << local(id_);
         }
 
     private:

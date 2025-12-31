@@ -8,4 +8,5 @@
 #include <ir/basic_block.hpp>
 #include <ir/function.hpp>
 #include <ir/constants.hpp>
+#include <ir/global.hpp>
 #include <irbuilder/ir_builder.hpp>

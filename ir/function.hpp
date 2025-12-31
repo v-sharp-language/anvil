@@ -28,7 +28,7 @@ namespace anvil::ir
                 paramTypes_[i]->print(os);
             }
             os << ") {\n";
-            for (auto *bb : blocks_)
+            for (BasicBlock *bb : blocks_)
             {
                 bb->print(os);
                 os << "\n";

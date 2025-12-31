@@ -16,7 +16,7 @@ namespace anvil::ir
         void print(std::ostream &os) const
         {
             os << name_ << ":\n";
-            for (auto *inst : instructions_)
+            for (Instruction *inst : instructions_)
             {
                 os << "  ";
                 inst->print(os);
@@ -28,5 +28,4 @@ namespace anvil::ir
         std::string name_;
         std::vector<Instruction *> instructions_;
     };
-
 }

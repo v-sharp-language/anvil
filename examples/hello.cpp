@@ -8,16 +8,16 @@ int main()
     Context ctx;
     Module mod("test");
 
-    auto *i32 = ctx.getIntType(32);
-    auto *fn = new Function(i32, "main");
+    Function *fn = new Function(ctx.getInt32Ty(), "main");
 
     BasicBlock *entry = new BasicBlock("entry");
-    IRBuilder builder(entry);
+    IRBuilder builder(&ctx, entry);
 
-    auto *const1 = new ConstantInt(i32, 42);
-    auto *const2 = new ConstantInt(i32, 58);
+    GlobalVariable *hello = mod.createStringLiteral(ctx, "Hello, world");
+    ConstantInt *zero = new ConstantInt(ctx.getInt32Ty(), 0);
+    Instruction *ptr = builder.CreateGEP(hello, {zero, zero});
 
-    Instruction *value = builder.CreateAdd(const1, const2);
+    Instruction *value = builder.CreateAdd(new ConstantInt(ctx.getInt32Ty(), 42), new ConstantInt(ctx.getInt32Ty(), 58));
     builder.CreateRet(value);
 
     fn->addBlock(entry);

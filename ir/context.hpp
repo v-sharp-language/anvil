@@ -30,7 +30,7 @@ namespace anvil::ir
                                    });
             if (it != types_.end())
                 return it->get();
-            auto *t = makeType(Type::Kind::Integer, bits);
+            Type *t = makeType(Type::Kind::Integer, bits);
             types_.emplace_back(t);
             return t;
         }
@@ -71,7 +71,7 @@ namespace anvil::ir
             return true; });
             if (it != types_.end())
                 return it->get();
-            auto *t = new Type(elements);
+            Type *t = new Type(elements);
             types_.emplace_back(t);
             return t;
         }
@@ -94,7 +94,7 @@ namespace anvil::ir
                                    });
             if (it != types_.end())
                 return it->get();
-            auto *t = new Type(retType, params);
+            Type *t = new Type(retType, params);
             types_.emplace_back(t);
             return t;
         }
@@ -107,7 +107,7 @@ namespace anvil::ir
                                    { return t->getKind() == k; });
             if (it != types_.end())
                 return it->get();
-            auto *t = makeType(k);
+            Type *t = makeType(k);
             types_.emplace_back(t);
             return t;
         }
@@ -121,7 +121,7 @@ namespace anvil::ir
             return false; });
             if (it != types_.end())
                 return it->get();
-            auto *t = new Type(elem, numElems, k);
+            Type *t = new Type(elem, numElems, k);
             types_.emplace_back(t);
             return t;
         }
